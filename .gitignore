@@ -1,4 +1,3 @@
 /.doit.db
 /build
-/src_py/dtviz/json_schema_repo.json
 __pycache__

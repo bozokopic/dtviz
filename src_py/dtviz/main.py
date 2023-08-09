@@ -1,6 +1,6 @@
 from pathlib import Path
-import argparse
 import itertools
+import logging.config
 import sys
 
 from hat import json
@@ -8,43 +8,30 @@ from hat import json
 from dtviz import common
 from dtviz import decoder
 from dtviz import encoder
-
-
-def create_argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--output', metavar='PATH', type=Path,
-                        default=Path('-'))
-    parser.add_argument('conf', metavar='PATH', type=Path, default=Path('-'))
-    return parser
+from dtviz.args import parse_args
 
 
 def main():
-    parser = create_argument_parser()
-    args = parser.parse_args()
+    args = parse_args(sys.argv)
 
-    conf = (json.decode_stream(sys.stdin, json.Format.JSON)
-            if args.conf == Path('-')
-            else json.decode_file(args.conf))
-
-    common.json_schema_repo.validate(common.conf_schema_id, conf)
+    if args.log:
+        _set_logging(args.log)
 
     projects = {}
     aliases = {}
     data = {}
 
-    for project_conf in conf['projects']:
-        path = Path(project_conf['path'])
-        project_type = common.ProjectType(project_conf['type']
-                                          if 'type' in project_conf
-                                          else path.name)
-        project_data = json.decode_file(path)
+    for project_args in args.projects:
+        project_type = (project_args.type or
+                        common.ProjectType(project_args.path.name))
+        project_data = json.decode_file(project_args.path)
 
-        project = decoder.get_project(project_type,
-                                      project_conf.get('name'), project_data)
+        project = decoder.get_project(project_type, project_args.name,
+                                      project_data)
 
         projects[project.name] = project
         data[project.name] = data
-        for alias in project_conf.get('aliases', []):
+        for alias in project_args.aliases:
             aliases[alias] = project
 
     externals = set()
@@ -68,7 +55,8 @@ def main():
     output_stream = (open(args.output, 'w', encoding='utf-8')
                      if args.output != Path('-') else sys.stdout)
     try:
-        encoder.write_header(output_stream)
+        encoder.write_header(stream=output_stream,
+                             dt_balance=args.dt_balance)
 
         for project in projects.values():
             encoder.write_node(stream=output_stream,
@@ -77,15 +65,22 @@ def main():
                                version=project.version,
                                is_external=False)
 
-        for name in externals:
-            encoder.write_node(stream=output_stream,
-                               node_id=name_ids[name],
-                               name=name,
-                               version=None,
-                               is_external=True)
+        if not args.skip_external:
+            for name in externals:
+                encoder.write_node(stream=output_stream,
+                                   node_id=name_ids[name],
+                                   name=name,
+                                   version=None,
+                                   is_external=True)
 
         for project in projects.values():
             for ref in project.refs:
+                if args.skip_external and ref.project not in projects:
+                    continue
+
+                if args.skip_dev and ref.dev:
+                    continue
+
                 encoder.write_edge(stream=output_stream,
                                    src_id=name_ids[project.name],
                                    dst_id=name_ids[ref.project],
@@ -97,6 +92,23 @@ def main():
     finally:
         if output_stream != sys.stdout:
             output_stream.close()
+
+
+def _set_logging(log_level):
+    logging.config.dictConfig({
+        'version': 1,
+        'formatters': {
+            'formater': {
+                'format': '[%(asctime)s %(levelname)s %(name)s] %(message)s'}},
+        'handlers': {
+            'handler': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'formater',
+                'level': log_level}},
+        'root': {
+            'level': log_level,
+            'handlers': ['handler']},
+        'disable_existing_loggers': False})
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 [project]
 name = "dtviz"
-version = "0.1.0"
+version = "0.2.0"
 description = "Dependency tree visualizer"
 readme = "README.rst"
 requires-python = ">=3.10"
@@ -14,8 +14,8 @@ dependencies = [
 Repository = "https://github.com/bozokopic/dtviz.git"
 
 [project.optional-dependencies]
-dev = ["hat-doit ~=0.14.4"]
+dev = ["hat-doit ~=0.14.5"]
 
 [build-system]
-requires = ["hat-doit ~=0.14.4"]
+requires = ["hat-doit ~=0.14.5"]
 build-backend = "hat.doit.pep517"

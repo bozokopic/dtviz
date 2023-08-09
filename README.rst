@@ -1,7 +1,12 @@
-dtviz
-=====
+.. _graphviz: https://graphviz.org
 
-Dependency tree visualizer
+dtviz - dependency tree visualizer
+==================================
+
+Generate `graphviz`_ dot file based on dependecies from:
+
+* pyproject.toml
+* package.json
 
 
 Requirements

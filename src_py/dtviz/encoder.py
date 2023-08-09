@@ -1,9 +1,10 @@
 import io
 
 
-def write_header(stream: io.TextIOBase):
+def write_header(stream: io.TextIOBase,
+                 dt_balance: str):
     stream.write('digraph {\n')
-    stream.write('rank=max\n')
+    stream.write(f'TBbalance={dt_balance}\n')
     stream.write('rankdir=BT\n')
 
 
