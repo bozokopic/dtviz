@@ -7,15 +7,23 @@ requires-python = ">=3.10"
 license = {text = "GPLv3"}
 dependencies = [
     "hat-json ~=0.5.19",
-    "packaging"
+    "packaging ~=23.1",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
 ]
 
 [project.urls]
 Repository = "https://github.com/bozokopic/dtviz.git"
 
 [project.optional-dependencies]
-dev = ["hat-doit ~=0.14.5"]
+dev = ["mkwhl ~=0.2.6"]
 
 [build-system]
-requires = ["hat-doit ~=0.14.5"]
-build-backend = "hat.doit.pep517"
+requires = ["mkwhl ~=0.2.6"]
+build-backend = "mkwhl"
+
+[tool.mkwhl]
+src-dir = '.'
+src-include-patterns = ["dtviz/**/*"]
