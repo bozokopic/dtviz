@@ -1,13 +1,13 @@
 [project]
 name = "dtviz"
-version = "0.2.1"
+version = "0.2.2"
 description = "Dependency tree visualizer"
 readme = "README.rst"
 requires-python = ">=3.10"
 license = {text = "GPLv3"}
 dependencies = [
-    "hat-json ~=0.5.18",
-    "packaging ~=24.1",
+    "hat-json ~=0.6.3",
+    "packaging ~=25.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
