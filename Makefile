@@ -17,8 +17,10 @@ check:
 
 requirements.pip.txt: pyproject.toml
 	$(PYTHON) -m hat.json.convert $? | \
-	jq -r '.project | .dependencies[], .["optional-dependencies"].dev[]' | \
+	jq -r '.project.dependencies[], .["dependency-groups"].dev[]' | \
 	sort > $@
 
 clean:
 	rm -rf build
+
+.PHONY: dist install editable check clean

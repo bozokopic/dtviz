@@ -20,11 +20,11 @@ Repository = "https://github.com/bozokopic/dtviz.git"
 [project.scripts]
 dtviz = "dtviz.main:main"
 
-[project.optional-dependencies]
-dev = ["mkwhl ~=0.3.1"]
+[dependency-groups]
+dev = ["mkwhl ~=0.3.2"]
 
 [build-system]
-requires = ["mkwhl ~=0.3.1"]
+requires = ["mkwhl ~=0.3.2"]
 build-backend = "mkwhl"
 
 [tool.mkwhl]
