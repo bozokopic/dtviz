@@ -1,6 +1,7 @@
 from hat import json
 
 from packaging.requirements import Requirement
+import dependency_groups
 
 from dtviz import common
 
@@ -54,6 +55,17 @@ def _get_project_refs(project_type, data):
                                     version=(str(i.specifier) if i.specifier
                                              else None),
                                     dev=True)
+
+        if 'dev' in data.get('dependency-groups', {}):
+            for i in dependency_groups.resolve(data['dependency-groups'],
+                                               'dev'):
+                i = Requirement(i)
+
+                yield common.ProjectRef(
+                    project=i.name,
+                    version=(str(i.specifier) if i.specifier
+                             else None),
+                    dev=True)
 
     elif project_type == common.ProjectType.PACKAGE_JSON:
         for name, version in data['dependencies'].items():

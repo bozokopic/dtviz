@@ -1,13 +1,14 @@
 [project]
 name = "dtviz"
-version = "0.2.2"
+version = "0.2.1"
 description = "Dependency tree visualizer"
 readme = "README.rst"
 requires-python = ">=3.10"
 license = {text = "GPLv3"}
 dependencies = [
-    "hat-json ~=0.6.3",
-    "packaging ~=25.0",
+    "dependency-groups >=1.3.1",
+    "hat-json ~=0.6.8",
+    "packaging ~=26.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -21,7 +22,18 @@ Repository = "https://github.com/bozokopic/dtviz.git"
 dtviz = "dtviz.main:main"
 
 [dependency-groups]
-dev = ["mkwhl ~=0.3.2"]
+run = [
+    "dependency-groups >=1.3.1",
+    "hat-json ~=0.6.8",
+    "packaging ~=26.0",
+]
+build = [
+    "mkwhl ~=0.3.2"
+]
+dev = [
+    {include-group = "run"},
+    {include-group = "build"},
+]
 
 [build-system]
 requires = ["mkwhl ~=0.3.2"]

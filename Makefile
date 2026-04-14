@@ -15,11 +15,6 @@ editable:
 check:
 	$(PYTHON) -m flake8 dtviz
 
-requirements.pip.txt: pyproject.toml
-	$(PYTHON) -m hat.json.convert $? | \
-	jq -r '.project.dependencies[], .["dependency-groups"].dev[]' | \
-	sort > $@
-
 clean:
 	rm -rf build
 
