@@ -40,9 +40,14 @@ def _get_project_version(project_type, data):
 
 def _get_project_refs(project_type, data):
     if project_type == common.ProjectType.PYPROJECT_TOML:
+        requirements = set()
+
         for i in data.get('project', {}).get('dependencies', []):
             i = Requirement(i)
+            if i in requirements:
+                continue
 
+            requirements.add(i)
             yield common.ProjectRef(project=i.name,
                                     version=(str(i.specifier) if i.specifier
                                              else None),
@@ -50,7 +55,10 @@ def _get_project_refs(project_type, data):
 
         for i in data.get('project', {}).get('optional-dependencies', {}).get('dev', []):  # NOQA
             i = Requirement(i)
+            if i in requirements:
+                continue
 
+            requirements.add(i)
             yield common.ProjectRef(project=i.name,
                                     version=(str(i.specifier) if i.specifier
                                              else None),
@@ -60,7 +68,10 @@ def _get_project_refs(project_type, data):
             for i in dependency_groups.resolve(data['dependency-groups'],
                                                'dev'):
                 i = Requirement(i)
+                if i in requirements:
+                    continue
 
+                requirements.add(i)
                 yield common.ProjectRef(
                     project=i.name,
                     version=(str(i.specifier) if i.specifier
